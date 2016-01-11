@@ -1,25 +1,28 @@
 require 'java'
 require_relative '../rpextras'
 require_relative '../jruby_art/helper_methods'
+require_relative '../jruby_art/helpers/aabb'
 require_relative '../jruby_art/helpers/string_extra'
 require_relative '../jruby_art/library_loader'
 require_relative '../jruby_art/config'
 
 # A wrapper module for the processing App
 module Processing
-  Dir[format("%s/core/library/\*.jar", RP_CONFIG['PROCESSING_ROOT'])].each do |jar| 
+  Dir[format("%s/core/library/\*.jar", RP_CONFIG['PROCESSING_ROOT'])].each do |jar|
     require jar unless jar =~ /native/
   end
   # Include some core processing classes that we'd like to use:
   include_package 'processing.core'
-  # Load vecmath and fastmath modules
-  Java::MonkstoneArcball::ArcballLibrary.new.load(JRuby.runtime, false)
-  Java::MonkstoneVecmathVec2::Vec2Library.new.load(JRuby.runtime, false)
-  Java::MonkstoneVecmathVec3::Vec3Library.new.load(JRuby.runtime, false)
-  Java::MonkstoneFastmath::DeglutLibrary.new.load(JRuby.runtime, false)
-  AppRender ||= Java::MonkstoneVecmath::AppRender
-  ShapeRender ||= Java::MonkstoneVecmath::ShapeRender
-
+  # Load vecmath, fastmath and mathtool modules
+  Java::MonkstoneArcball::ArcballLibrary.load(JRuby.runtime)
+  Java::MonkstoneVecmathVec2::Vec2Library.load(JRuby.runtime)
+  Java::MonkstoneVecmathVec3::Vec3Library.load(JRuby.runtime)
+  Java::MonkstoneFastmath::DeglutLibrary.load(JRuby.runtime)
+  Java::Monkstone::MathToolLibrary.load(JRuby.runtime)
+  module Render
+    java_import 'monkstone.vecmath.AppRender'
+    java_import 'monkstone.vecmath.ShapeRender'
+  end
   # Watch the definition of these methods, to make sure
   # that Processing is able to call them during events.
   METHODS_TO_ALIAS ||= {
@@ -34,7 +37,7 @@ module Processing
   }
   # All sketches extend this class
   class App < PApplet
-    include HelperMethods, Math
+    include HelperMethods, Math, MathTool, Render
     # Alias some methods for familiarity for Shoes coders.
     # surface replaces :frame, but needs field_reader for access
     alias_method :oval, :ellipse
@@ -120,7 +123,19 @@ module Processing
     end
 
     def sketch_title(title)
-      surface.setTitle(title)
+      surface.set_title(title)
+    end
+
+    def sketch_size(x, y)
+      surface.set_size(x, y)
+    end
+
+    def resizable(arg = true)
+      surface.set_resizable(arg)
+    end
+
+    def on_top(arg = true)
+      surface.set_always_on_top(arg)
     end
 
     def post_initialize(_args)
@@ -133,7 +148,7 @@ module Processing
     def close
       control_panel.remove if respond_to?(:control_panel)
       surface.stopThread
-      surface.setVisible(false) if surface.isStopped()
+      surface.setVisible(false) if surface.isStopped
       dispose
     end
 

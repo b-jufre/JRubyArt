@@ -1,8 +1,7 @@
-# The processing wrapper module
 require_relative '../jruby_art'
 
+# The processing wrapper module
 module Processing
-
   # Encapsulate library loader functionality as a class
   class LibraryLoader
     attr_reader :sketchbook_library_path
@@ -80,12 +79,13 @@ module Processing
     end
 
     def get_platform_specific_library_paths(basename)
-      bits = 'universal'  # for MacOSX, but does this even work, or does Mac return '64'?
+      # for MacOSX, but does this even work, or does Mac return '64'?
+      bits = 'universal'
       if java.lang.System.getProperty('sun.arch.data.model') == '32' ||
-        java.lang.System.getProperty('java.vm.name').index('32')
+         java.lang.System.getProperty('java.vm.name').index('32')
         bits = '32'
       elsif java.lang.System.getProperty('sun.arch.data.model') == '64' ||
-        java.lang.System.getProperty('java.vm.name').index('64')
+            java.lang.System.getProperty('java.vm.name').index('64')
         bits = '64' unless platform =~ /macosx/
       end
       [platform, platform + bits].map { |p| File.join(basename, p) }
@@ -101,11 +101,12 @@ module Processing
     def get_library_directory_path(library_name, extension = nil)
       extensions = extension ? [extension] : %w(jar rb)
       extensions.each do |ext|
-        ["#{SKETCH_ROOT}/library/#{library_name}",
-        "#{Processing::RP_CONFIG['PROCESSING_ROOT']}/modes/java/libraries/#{library_name}/library",
-        "#{K9_ROOT}/library/#{library_name}/library",
-        "#{K9_ROOT}/library/#{library_name}",
-        "#{@sketchbook_library_path}/#{library_name}/library"
+        [
+          "#{SKETCH_ROOT}/library/#{library_name}",
+          "#{Processing::RP_CONFIG['PROCESSING_ROOT']}/modes/java/libraries/#{library_name}/library",
+          "#{K9_ROOT}/library/#{library_name}/library",
+          "#{K9_ROOT}/library/#{library_name}",
+          "#{@sketchbook_library_path}/#{library_name}/library"
         ].each do |jpath|
           if File.exist?(jpath) && !Dir.glob(format('%s/*.%s', jpath, ext)).empty?
             return jpath
@@ -120,9 +121,11 @@ module Processing
       sketchbook_paths = []
       sketchbook_path = Processing::RP_CONFIG.fetch('sketchbook_path', false)
       return sketchbook_path if sketchbook_path
-      ["'Application Data/Processing'", 'AppData/Roaming/Processing',
-       'Library/Processing', 'Documents/Processing',
-       '.processing', 'sketchbook'].each do |prefix|
+      [
+        "'Application Data/Processing'", 'AppData/Roaming/Processing',
+        'Library/Processing', 'Documents/Processing',
+        '.processing', 'sketchbook'
+      ].each do |prefix|
         spath = format('%s/%s', ENV['HOME'], prefix)
         pref_path = format('%s/preferences.txt', spath)
         preferences_paths << pref_path if FileTest.file?(pref_path)
@@ -131,7 +134,7 @@ module Processing
       return sketchbook_paths.first if preferences_paths.empty?
       lines = IO.readlines(preferences_paths.first)
       matchedline = lines.grep(/^sketchbook/).first
-      matchedline[/=(.+)/].gsub('=', '')
+      matchedline[/=(.+)/].delete('=')
     end
   end
 end

@@ -1,10 +1,12 @@
 # require 'rpextras'
+#@todo fix how we call LIbrary Proxy
+java_import Java::MonkstoneCore::LibraryProxy
 
-LibraryProxy = Java::MonkstoneCore::AbstractLibrary
 
 # classes that inherit from Library are expected to implement
-# the abstract methods of processing.core.AbstractLibrary
+# the abstract methods of processing.core.LibraryProxy
 # def pre...
 # def draw...
 # def post...
 # NOOP is fine...
+# `app` can be called to get PApplet instance

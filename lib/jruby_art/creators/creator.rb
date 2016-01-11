@@ -8,7 +8,8 @@ def draw
 end
 
 def settings
-  size %s, %s, FX2D
+  size %s, %s
+  # pixel_density(2) # here for hi-dpi displays only
   # smooth # here
 end
 
@@ -41,10 +42,35 @@ class %s < Processing::App
   end
 
   def settings
-    size %s, %s, FX2D
+    size %s, %s
+    # pixel_density(2) # here for hi-dpi displays only
     # smooth # here
   end
 end
+CODE
+
+EMACS_BASIC = <<-CODE
+require 'jruby_art'
+require 'jruby_art/app'
+
+Processing::App::SKETCH_PATH = __FILE__
+
+class %s < Processing::App
+  def setup
+    sketch_title '%s'
+  end
+
+  def draw
+
+  end
+
+  def settings
+    size %s, %s
+    # smooth # here
+  end
+end
+
+%s.new unless defined? $app
 CODE
 
 CLASS_MODE = <<-CODE
@@ -62,6 +88,30 @@ class %s < Processing::App
     # smooth # here
   end
 end
+CODE
+
+EMACS_MODE = <<-CODE
+require 'jruby_art'
+require 'jruby_art/app'
+
+Processing::App::SKETCH_PATH = __FILE__
+
+class %s < Processing::App
+  def setup
+    sketch_title '%s'
+  end
+
+  def draw
+
+  end
+
+  def settings
+    size %s, %s, %s
+    # smooth # here
+  end
+end
+
+%s.new unless defined? $app
 CODE
 
 INNER = <<-CODE
@@ -165,6 +215,31 @@ module Processing
       @width, @height = args[0], args[1]
       @mode = args[2].upcase unless args[2].nil?
       template = @mode.nil? ? class_template : class_template_mode
+      writer.save(template)
+    end
+  end
+
+  # This class creates class wrapped sketches, with an optional render mode
+  class EmacsSketch < Creator
+    def emacs_template
+      format(EMACS_BASIC, @name, @title, @width, @height, @name)
+    end
+
+    def emacs_template_mode
+      format(EMACS_MODE, @name, @title, @width, @height, @mode, @name)
+    end
+    # Create a class wrapped sketch, given a path.
+    def create!(path, args)
+      return usage if /\?/ =~ path || /--help/ =~ path
+      main_file = File.basename(path, '.rb') # allow uneeded extension input
+      # Check to make sure that the main file doesn't exist already
+      already_exist(path)
+      @name = CamelString.new(main_file).camelize
+      writer = SketchWriter.new(main_file)
+      @title = StringExtra.new(main_file).titleize
+      @width, @height = args[0], args[1]
+      @mode = args[2].upcase unless args[2].nil?
+      template = @mode.nil? ? emacs_template : emacs_template_mode
       writer.save(template)
     end
   end

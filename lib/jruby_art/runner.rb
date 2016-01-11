@@ -1,3 +1,4 @@
+
 require 'ostruct'
 require 'fileutils'
 require 'rbconfig'
@@ -21,12 +22,13 @@ module Processing
     choice:-
     run:              run sketch once
     watch:            watch for changes on the file and relaunch it on the fly
+    live:             run sketch and open a pry console bound to $app
     create [width height][mode][flag]: create a new sketch.
-    setup:            check setup, install jruby-complete, unpack samples
+    setup:            check / install / unpack_samples
 
     Common options:
     --nojruby:  use jruby-complete in place of an installed version of jruby
-    (Set [JRUBY: 'false'] in .k9rc to make using jruby-complete default)
+    (Set [JRUBY: 'false'] in .jruby_art/config.yml to make using jruby-complete default)
 
     Examples:
     k9 setup unpack_samples
@@ -36,7 +38,7 @@ module Processing
     k9 watch some_new_sketch.rb
 
     Everything Else:
-    http://wiki.github.com/monkstone/jruby_art-3.0
+    https://ruby-processing.github.io/
 
     EOS
 
@@ -62,6 +64,7 @@ module Processing
     def execute!
       case @options.action
       when 'run'    then run(@options.path, @options.args)
+      when 'live'   then live(@options.path, @options.args)
       when 'watch'  then watch(@options.path, @options.args)
       when 'create' then create(@options.path, @options.args)
       when 'setup'  then setup(@options.path)
@@ -75,6 +78,7 @@ module Processing
     # Parse the command-line options. Keep it simple.
     def parse_options(args)
       @options = OpenStruct.new
+      @options.emacs = !args.delete('--emacs').nil?
       @options.wrap = !args.delete('--wrap').nil?
       @options.inner = !args.delete('--inner').nil?
       @options.jruby = !args.delete('--jruby').nil?
@@ -90,6 +94,7 @@ module Processing
       require_relative '../jruby_art/creators/creator'
       return Processing::Inner.new.create!(sketch, args) if @options.inner
       return Processing::ClassSketch.new.create!(sketch, args) if @options.wrap
+      return Processing::EmacsSketch.new.create!(sketch, args) if @options.emacs
       Processing::BasicSketch.new.create!(sketch, args)
     end
 
@@ -97,6 +102,12 @@ module Processing
     def run(sketch, args)
       ensure_exists(sketch)
       spin_up('run.rb', sketch, args)
+    end
+
+    # Just simply run a JRubyArt sketch.
+    def live(sketch, args)
+      ensure_exists(sketch)
+      spin_up('live.rb', sketch, args)
     end
 
     # Run a sketch, keeping an eye on it's file, and reloading
@@ -132,12 +143,8 @@ module Processing
       root = '  PROCESSING_ROOT = Not Set!!!' unless root_exist
       root ||= "  PROCESSING_ROOT = #{Processing::RP_CONFIG['PROCESSING_ROOT']}"
       jruby = Processing::RP_CONFIG['JRUBY']
-      x_off = Processing::RP_CONFIG['X_OFF']
-      y_off = Processing::RP_CONFIG['Y_OFF']
       puts root
       puts "  JRUBY = #{jruby}" unless jruby.nil?
-      puts "  X_OFF = #{x_off}" unless x_off.nil?
-      puts "  Y_OFF = #{y_off}" unless y_off.nil?
       puts "  jruby-complete installed = #{installed}"
     end
 
@@ -154,10 +161,10 @@ module Processing
     private
 
     # Trade in this Ruby instance for a JRuby instance, loading in a starter
-    # script and passing it some arguments.Unless '--nojruby' is passed, the
+    # script and passing it some arguments. Unless '--nojruby' is passed, the
     # installed version of jruby is used instead of our vendored jarred one
     # (which is required for some sketches eg shaders). To use
-    # jruby-complete by default set JRUBY: false in ~/.k9rc config
+    # jruby-complete by default set JRUBY: false in ~/.jruby_art/config.yml
     # (but that will make using other gems in your sketches hard....)
     def spin_up(starter_script, sketch, args)
       runner = "#{K9_ROOT}/lib/jruby_art/runners/#{starter_script}"
@@ -214,11 +221,11 @@ module Processing
       warn "#{rcomplete} does not exist\nTry running `k9 setup install`"
       exit
     end
-    
+
     def libraries
       %w(video sound).map { |library| sketchbook_library(library) }.flatten
     end
-    
+
     def sketchbook_library(name)
       Dir["#{Processing::RP_CONFIG['sketchbook_path']}/libraries/#{name}/library/\*.jar"]
     end
@@ -245,7 +252,7 @@ module Processing
       if os == :mac
         data['PROCESSING_ROOT'] = '/Applications/Processing.app/Contents/Java'
       else
-        root = "#{ENV['HOME']}/processing-3.0a11"
+        root = "#{ENV['HOME']}/processing-3.0.1"
         data['PROCESSING_ROOT'] = root
       end
       data['JRUBY'] = 'true'
