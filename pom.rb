@@ -27,6 +27,8 @@ project 'rp5extras', 'https://github.com/ruby-processing/JRubyArt' do
   )
 
   properties(
+    'processing.sketchbook' => '${user.home}/sketchbook/libraries/video/',
+    'processing.home' => '${user.home}/processing-3.1',
     'maven.compiler.source' => '1.8',
     'project.build.sourceEncoding' => 'UTF-8',
     'maven.compiler.target' => '1.8',
@@ -36,8 +38,22 @@ project 'rp5extras', 'https://github.com/ruby-processing/JRubyArt' do
   )
 
   pom 'org.jruby:jruby:9.1.0.0'
-  jar 'org.processing:core:3.0.2'
-  jar 'org.processing:video:3.0.2'
+  jar(
+    'org.processing:core',
+    group_id: 'processing.org',
+    artifact_id: 'processing.core',
+    scope: 'system',
+    version: '3.1',
+    system_path: '${processing.home}/core/library/core.jar'
+  )
+  jar(
+    'org.processing:video',
+    group_id: 'processing.org',
+    artifact_id: 'processing.video',
+    scope: 'system',
+    version: '1.0.1',
+    system_path: '${processing.sketchbook}/library/video.jar'
+  )
   plugin_management do
     plugin :resources, '2.6'
     plugin :dependency, '2.8'
