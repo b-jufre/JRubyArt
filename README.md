@@ -1,9 +1,10 @@
 
 # JRubyArt
-![travis status](https://travis-ci.org/ruby-processing/JRubyArt.svg)
 
-## Requirements
-A clean start for `jruby_art` based on [processing-3.0.2](https://github.com/processing/processing/releases) and [jruby-9.1.0.0](http://jruby.org/download) see [wiki](https://github.com/ruby-processing/JRubyArt/wiki/Building-latest-gem) for building gem from this repo.  Changes from processing- 2.0 to [processing-3.0 here](https://github.com/processing/processing/wiki/Changes-in-3.0). Should work on same platforms as vanilla processing (windows, mac, linux) for Android see Yuki Morohoshi [rubuto-processing3][].
+## Introduction
+
+A clean start for `jruby_art` based on [processing-3.1](https://github.com/processing/processing/releases) and [jruby-9.1.0.0](http://jruby.org/download) see [wiki](https://github.com/ruby-processing/JRubyArt/wiki/Building-latest-gem) for building gem from this repo.  Changes from processing-2.0 to [processing-3.0 here](https://github.com/processing/processing/wiki/Changes-in-3.0). Should work on same platforms as vanilla processing (windows, mac, linux) for Android see Yuki Morohoshi [rubuto-processing3][].
+
 ## Requirements
  
 A suitable version of ruby (MRI ruby > 2.2 or `jruby-9.1.0.0+`) to download gem. 
@@ -12,7 +13,7 @@ A suitable version of ruby (MRI ruby > 2.2 or `jruby-9.1.0.0+`) to download gem.
 
 `jdk1.8.0_92+` can be openjdk with OpenJFX _a separate download works on ArchLinux_, currently FX2D is experimental is expected to replace JAVA2D in the near future see changes above...
 
-### recommended installs (JRubyArt is currently hard-coded to expect them)
+### Recommended Extras (JRubyArt is currently hard-coded to expect them)
 
 processing `video` and `sound-1.3.2+` libraries _best installed from the processing-3.0.2 ide_
 
