@@ -14,7 +14,7 @@ project 'rp5extras', 'https://github.com/ruby-processing/JRubyArt' do
 
   developer 'monkstone' do
     name 'Martin Prout'
-    email 'martin_p@lineone.net'
+    email 'mamba2928@yahoo.co.uk'
     roles 'developer'
   end
 
@@ -27,7 +27,7 @@ project 'rp5extras', 'https://github.com/ruby-processing/JRubyArt' do
   )
 
   properties(
-    'processing.sketchbook' => '${user.home}/sketchbook/libraries/video/',
+    'processing.sketchbook' => '${user.home}/sketchbook3/libraries/video/',
     'processing.home' => '${user.home}/processing-3.1',
     'maven.compiler.source' => '1.8',
     'project.build.sourceEncoding' => 'UTF-8',
@@ -38,22 +38,9 @@ project 'rp5extras', 'https://github.com/ruby-processing/JRubyArt' do
   )
 
   pom 'org.jruby:jruby:9.1.0.0'
-  jar(
-    'org.processing:core',
-    group_id: 'processing.org',
-    artifact_id: 'processing.core',
-    scope: 'system',
-    version: '3.1',
-    system_path: '${processing.home}/core/library/core.jar'
-  )
-  jar(
-    'org.processing:video',
-    group_id: 'processing.org',
-    artifact_id: 'processing.video',
-    scope: 'system',
-    version: '1.0.1',
-    system_path: '${processing.sketchbook}/library/video.jar'
-  )
+  jar 'org.processing:core:3.1'
+  jar 'org.processing:video:3.0.2'
+  
   plugin_management do
     plugin :resources, '2.6'
     plugin :dependency, '2.8'
