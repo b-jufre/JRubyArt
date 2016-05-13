@@ -201,7 +201,6 @@ module Processing
     def discover_java_args(sketch)
       arg_file = "#{File.dirname(sketch)}/data/java_args.txt"
       args = []
-      args += dock_icon
       if FileTest.exist?(arg_file)
         args += File.read(arg_file).split(/\s+/)
       elsif Processing::RP_CONFIG['java_args']
@@ -249,27 +248,16 @@ module Processing
     def set_processing_root
       require 'psych'
       @os ||= host_os
-      data = {}
+      config_data = {}
       path = File.expand_path("#{ENV['HOME']}/.jruby_art/config.yml")
       if os == :mac
         data['PROCESSING_ROOT'] = '/Applications/Processing.app/Contents/Java'
       else
-        root = "#{ENV['HOME']}/processing-3.0.1"
-        data['PROCESSING_ROOT'] = root
+        root = "#{ENV['HOME']}/processing-3.1"
+        config_data['PROCESSING_ROOT'] = root
       end
-      data['JRUBY'] = 'true'
-      open(path, 'w:UTF-8') { |f| f.write(data.to_yaml) }
-    end
-
-    # On the Mac, we can display a fat, shiny ruby in the Dock.
-    def dock_icon
-      @os ||= host_os
-      icon = []
-      if os == :mac
-        icon << '-Xdock:name=JRubyArt'
-        icon << "-Xdock:icon=#{K9_ROOT}/lib/templates/application/Contents/Resources/sketch.icns"
-      end
-      icon
+      config_data['JRUBY'] = 'true'
+      open(path, 'w:UTF-8') { |f| f.write(config_data.to_yaml) }
     end
   end # class Runner
 end # module Processing

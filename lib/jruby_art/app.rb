@@ -44,6 +44,7 @@ module Processing
     alias_method :rgb, :color
     alias_method :gray, :color
     field_reader :surface
+    field_reader :sketchPath
 
     def sketch_class
       self.class.sketch_class
