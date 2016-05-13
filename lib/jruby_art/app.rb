@@ -44,6 +44,7 @@ module Processing
     alias_method :rgb, :color
     alias_method :gray, :color
     field_reader :surface
+    field_accessor :sketchPath
 
     def sketch_class
       self.class.sketch_class
@@ -125,12 +126,14 @@ module Processing
       surface.set_title(title)
     end
     
-    def sketch_path(spath = nil)
-      return java_class.declared_field('sketchPath') unless spath
+    def sketchPath(spath = nil)
+      method = self.java_method :sketchPath
+      return method.call unless spath
       begin
-        field.set_value(java_self, spath || SKETCH_ROOT)
+        path = PApplet.java_method :sketchPath, [java.lang.String]
+        path.bind(self).call(spath)
       rescue TypeError
-        fail 'Did not work'
+        fail 'We have not fixed it yet'
       end
     end
 
