@@ -44,7 +44,6 @@ module Processing
     alias_method :rgb, :color
     alias_method :gray, :color
     field_reader :surface
-    field_reader :sketchPath
 
     def sketch_class
       self.class.sketch_class
@@ -124,6 +123,15 @@ module Processing
 
     def sketch_title(title)
       surface.set_title(title)
+    end
+    
+    def sketch_path(spath = nil)
+      return java_class.declared_field('sketchPath') unless spath
+      begin
+        field.set_value(java_self, spath || SKETCH_ROOT)
+      rescue TypeError
+        fail 'Did not work'
+      end
     end
 
     def sketch_size(x, y)

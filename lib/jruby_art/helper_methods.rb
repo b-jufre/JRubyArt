@@ -119,7 +119,7 @@ module Processing
     # Proxy over a list of Java declared fields that have the same name as
     # some methods. Add to this list as needed.
     def proxy_java_fields
-      fields = %w(sketchPath key frameRate mousePressed keyPressed)
+      fields = %w(key frameRate mousePressed keyPressed)
       methods  = fields.map { |field| java_class.declared_field(field) }
       @declared_fields = Hash[fields.zip(methods)]
     end
@@ -136,10 +136,7 @@ module Processing
       @java_self ||= to_java(Java::ProcessingCore::PApplet)
     end
 
-    # Get the sketch path
-    def sketch_path
-      @declared_fields['sketchPath'].value(java_self)
-    end
+
 
     # Fields that should be made accessible as under_scored.
     define_method(:mouse_x) { mouseX }
