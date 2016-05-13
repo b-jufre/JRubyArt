@@ -1,4 +1,4 @@
-**v1.0.8** Update recommended processing version to version 3.1 (jdk8). Exposed Constrain functionality for ArcBall, added literate perspektive method. Introduced `rgb_color` method
+**v1.0.8** Update recommended processing version to version 3.1 (jdk8). Exposed Constrain functionality for ArcBall, added literate perspektive method. Introduced `rgb_color` method.  Exposed `private String sketchPath` variable as readable in ruby.
 
 **v1.0.7** Added tool to efficiently convert an Array of web colour Strings to and Array of color int (should be used by users of hype library, that uses of web strings in most of its examples). Update to use jruby-complete-9.1.0.0.
 
