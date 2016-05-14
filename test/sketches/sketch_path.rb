@@ -1,6 +1,7 @@
 java_alias :background_int, :background, [Java::int]
 
 def setup
+  sketchPath '/home/tux'
   frame_rate(10)  
   puts sketchPath
 end
@@ -14,6 +15,5 @@ end
 
 def settings
   size(300, 300)
-  sketchPath SKETCH_ROOT
 end
 
