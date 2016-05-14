@@ -1,8 +1,7 @@
 java_alias :background_int, :background, [Java::int]
 
 def setup
-  frame_rate(10)
-  
+  frame_rate(10)  
   puts sketchPath
 end
 
@@ -15,6 +14,6 @@ end
 
 def settings
   size(300, 300)
-  sketchPath 'dummy'
+  sketchPath SKETCH_ROOT
 end
 

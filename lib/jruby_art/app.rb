@@ -44,7 +44,6 @@ module Processing
     alias_method :rgb, :color
     alias_method :gray, :color
     field_reader :surface
-    field_accessor :sketchPath
 
     def sketch_class
       self.class.sketch_class
@@ -121,22 +120,16 @@ module Processing
       import_opengl if /opengl/ =~ mode
       super(*args)
     end
+    
+    def sketchPath(spath = nil)
+      return super() if spath.nil?
+      super(spath)
+    end
 
     def sketch_title(title)
       surface.set_title(title)
     end
     
-    def sketchPath(spath = nil)
-      method = self.java_method :sketchPath
-      return method.call unless spath
-      begin
-        path = PApplet.java_method :sketchPath, [java.lang.String]
-        path.bind(self).call(spath)
-      rescue TypeError
-        fail 'We have not fixed it yet'
-      end
-    end
-
     def sketch_size(x, y)
       surface.set_size(x, y)
     end
